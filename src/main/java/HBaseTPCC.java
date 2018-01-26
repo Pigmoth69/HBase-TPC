@@ -266,15 +266,15 @@ public class HBaseTPCC {
         HTable ordersTable = new HTable(config, Orders.TABLE);
 
         List<String> customers = new ArrayList<>();
-        FilterList filterList = new FilterList(FilterList.Operator.MUST_PASS_ALL);
+        FilterList filters = new FilterList(FilterList.Operator.MUST_PASS_ALL);
 
-        filterList.addFilter(new SingleColumnValueFilter(TABLE_FAMILY_NUMERIC,Orders.O_ENTRY_D, CompareFilter.CompareOp.GREATER_OR_EQUAL,stringToByteTimestamp(startDate)));
-        filterList.addFilter(new SingleColumnValueFilter(TABLE_FAMILY_NUMERIC,Orders.O_ENTRY_D, CompareFilter.CompareOp.LESS,stringToByteTimestamp(endDate)));
-        filterList.addFilter(new SingleColumnValueFilter(TABLE_FAMILY_ID,Orders.O_D_ID, CompareFilter.CompareOp.EQUAL,districtId.getBytes()));
-        filterList.addFilter(new SingleColumnValueFilter(TABLE_FAMILY_ID,Orders.O_W_ID, CompareFilter.CompareOp.EQUAL,warehouseId.getBytes()));
+        filters.addFilter(new SingleColumnValueFilter(TABLE_FAMILY_NUMERIC,Orders.O_ENTRY_D, CompareFilter.CompareOp.GREATER_OR_EQUAL,stringToByteTimestamp(startDate)));
+        filters.addFilter(new SingleColumnValueFilter(TABLE_FAMILY_NUMERIC,Orders.O_ENTRY_D, CompareFilter.CompareOp.LESS,stringToByteTimestamp(endDate)));
+        filters.addFilter(new SingleColumnValueFilter(TABLE_FAMILY_ID,Orders.O_D_ID, CompareFilter.CompareOp.EQUAL,districtId.getBytes()));
+        filters.addFilter(new SingleColumnValueFilter(TABLE_FAMILY_ID,Orders.O_W_ID, CompareFilter.CompareOp.EQUAL,warehouseId.getBytes()));
 
         Scan scan = new Scan();
-        scan.setFilter(filterList);
+        scan.setFilter(filters);
 
         results = ordersTable.getScanner(scan);
         Result res = results.next();
