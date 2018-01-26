@@ -310,25 +310,23 @@ public class HBaseTPCC {
     public String[] query3(String warehouseId, String districtId, String customerId) throws IOException {
 
         HTable table = new HTable(config, Customer.TABLE);
-        String[] discount = new String[4];
+        ArrayList<String> discounts = new ArrayList<>();
 
         Get get = new Get(Customer.getKey(warehouseId, districtId, customerId));
         get.setMaxVersions(4);
         get.addColumn(TABLE_FAMILY_NUMERIC, Customer.C_DISCOUNT);
 
-        int pos=0;
-        Result result = table.get(get);
 
+        Result result = table.get(get);
         if (result != null && !result.isEmpty()){
             CellScanner scanner = result.cellScanner();
-            while (scanner.advance()) {
+            while (scanner.advance() && discounts.size()<4) {
                 Cell cell = scanner.current();
                 byte[] value = CellUtil.cloneValue(cell);
-                discount[pos] = new String(value,"UTF-8");
-                pos++;
+                discounts.add(new String(value,"UTF-8"));
             }
         }
-        return discount;
+        return discounts.toArray(new String[0]);
     }
 
     public List<Integer>  query4(String warehouseId, String[] districtIds) throws IOException {
@@ -438,6 +436,19 @@ public class HBaseTPCC {
         return dateFormat.format(new Date());
     }
 
+    private static byte[] stringToByteTimestamp(String time) {
+        long inter = Timestamp.valueOf(time).getTime();
+        return String.valueOf(inter).getBytes();
+    }
+
+
+    private byte[] buildEndKey(String C_W_ID, String C_D_ID) {
+        return Customer.getKey(C_W_ID, C_D_ID, "90000");
+    }
+
+    private byte[] buildStartKey(String C_W_ID, String C_D_ID) {
+        return Customer.getKey(C_W_ID, C_D_ID, "1");
+    }
     private static void writeToLog(String s, Status info) {
         if(info == Status.INFO){
             logger.info(s+" - "+ getCurrentTimeDate());
@@ -633,19 +644,7 @@ public class HBaseTPCC {
         return put;
     }
 
-    private static byte[] stringToByteTimestamp(String time) {
-        long inter = Timestamp.valueOf(time).getTime();
-        return String.valueOf(inter).getBytes();
-    }
 
-
-    private byte[] buildEndKey(String C_W_ID, String C_D_ID) {
-        return Customer.getKey(C_W_ID, C_D_ID, "90000");
-    }
-
-    private byte[] buildStartKey(String C_W_ID, String C_D_ID) {
-        return Customer.getKey(C_W_ID, C_D_ID, "1");
-    }
 
 }
 
