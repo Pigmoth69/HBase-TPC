@@ -10,11 +10,11 @@ import java.util.Arrays;
 
 public class NewOrder {
 
-    public final byte[] TABLE = "NewOrder".getBytes();
+    public static byte[] TABLE = "NewOrder".getBytes();
 
-    public final byte[] NO_O_ID = "NO_O_ID".getBytes();
-    public final byte[] NO_D_ID = "NO_D_ID".getBytes();
-    public final byte[] NO_W_ID = "NO_W_ID".getBytes();
+    public static final byte[] NO_O_ID = "NO_O_ID".getBytes();
+    public static final byte[] NO_D_ID = "NO_D_ID".getBytes();
+    public static final byte[] NO_W_ID = "NO_W_ID".getBytes();
 
     public static byte[] getKey(String NO_W_ID, String NO_D_ID, String NO_O_ID){
         return KeyBuilder.buildKey(Arrays.asList(NO_W_ID, NO_D_ID, NO_O_ID));
